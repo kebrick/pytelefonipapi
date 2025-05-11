@@ -22,7 +22,7 @@ class BaseAPI:
 
     def __init__(self, token: str, session: requests.Session | None = None, debug: bool = False,
                  base_url: str = None, base_headers: dict = None, logger:
-        logging.Logger | None = None, return_dict: bool = False):
+        logging.Logger | None = None, return_dict: bool = False, *args, **kwargs):
         """
 
         :param token: token for access api
@@ -60,10 +60,7 @@ class BaseAPI:
     def session_s(self, session: requests.Session = None):
         """Изменение сессии"""
         if session is None:
-            raise SetSession(
-                self.__class__.__qualname__,
-                self.session_s.__name__,
-                f"Не присвоен объект типа requests.Session")
+            raise SetSession(f"Не присвоен объект типа requests.Session")
         else:
             self.__session = session
 
@@ -219,7 +216,7 @@ class BaseAPI:
 
 
 class FlashCallsAPI(BaseAPI):
-    def get_code(self, phone: str, sms: bool = False, ) -> GetCodeModel:
+    def get_code(self, phone: str, sms: bool = False, *args, **kwargs ) -> GetCodeModel:
         """
         :param phone: Номер вызываемого абонента. Ограничение на количество отправок в сутки по умолчанию 3
         :param sms:Если установлено значение true, клиенту совершается звонок. Если звонок не проходит и оператор возвращает код ошибки, на номер клиента автоматически отправляется SMS с кодом авторизации. По умолчанию установлено значение false
@@ -238,17 +235,13 @@ class FlashCallsAPI(BaseAPI):
 
             )
         except requests.exceptions.RequestException as err:
-            raise TokenException(self.__class__.__qualname__,
-                                 self.get_code.__name__,
-                                 f"Не удалось получить код авторизации: \n{err}")
+            raise TokenException(f"Не удалось получить код авторизации: \n{err}")
         except TypeError as err:
-            raise TypeError(self.__class__.__qualname__,
-                            self.get_code.__name__,
-                            f"Не удалось получить код авторизации: \n{err}")
+            raise TypeError(f"Не удалось получить код авторизации: \n{err}")
 
 
 class SMSCodeAPI(BaseAPI):
-    def get_sms_code(self, phone: str, code: str | None = None,
+    def get_sms_code(self, phone: str, code: str | None = None, *args, **kwargs
                      ) -> GetSMSCodeModel:
         """
         Отправка кода авторизации через смс. Генерируется случайный четырех значный код. Если нужно отправить свой код,
@@ -271,17 +264,13 @@ class SMSCodeAPI(BaseAPI):
                 model_response_data=GetSMSCodeModel,
             )
         except requests.exceptions.RequestException as err:
-            raise TokenException(self.__class__.__qualname__,
-                                 self.get_sms_code.__name__,
-                                 f"Не удалось получить код авторизации: \n{err}")
+            raise TokenException(f"Не удалось получить код авторизации: \n{err}")
         except TypeError as err:
-            raise TypeError(self.__class__.__qualname__,
-                            self.get_sms_code.__name__,
-                            f"Не удалось получить код авторизации: \n{err}")
+            raise TypeError(f"Не удалось получить код авторизации: \n{err}")
 
 
 class TGCodeAPI(BaseAPI):
-    def get_tg_code(self, phone: str, code: str | None = None,
+    def get_tg_code(self, phone: str, code: str | None = None, *args, **kwargs
                     ) -> GetTGCodeModel:
         """
         :param phone: Номер телефона вызываемого абонента.  Ограничение на количество отправок в сутки (опционально).
@@ -302,13 +291,9 @@ class TGCodeAPI(BaseAPI):
 
             )
         except requests.exceptions.RequestException as err:
-            raise TokenException(self.__class__.__qualname__,
-                                 self.get_tg_code.__name__,
-                                 f"Не удалось получить код авторизации: \n{err}")
+            raise TokenException(f"Не удалось получить код авторизации: \n{err}")
         except TypeError as err:
-            raise TypeError(self.__class__.__qualname__,
-                            self.get_tg_code.__name__,
-                            f"Не удалось получить код авторизации: \n{err}")
+            raise TypeError(f"Не удалось получить код авторизации: \n{err}")
 
 
 class BackCallsAPI(BaseAPI):
@@ -317,7 +302,7 @@ class BackCallsAPI(BaseAPI):
     Номер пользователя возвращается по webhook или через get запрос.
     """
 
-    def reverse_auth_phone_get(self, phone: str, ) -> ReverseAuthPhoneGetModel:
+    def reverse_auth_phone_get(self, phone: str, *args, **kwargs) -> ReverseAuthPhoneGetModel:
         """
         При запросе вы получаете случайный номер для звонка, а также id для получения информации о совершении звонка абонентом на этот номер. Для получения информации используйте функцию check_phone. Время жизни номера для авторизации составляет 120 секунд.
 
@@ -337,15 +322,11 @@ class BackCallsAPI(BaseAPI):
 
             )
         except requests.exceptions.RequestException as err:
-            raise TokenException(self.__class__.__qualname__,
-                                 self.reverse_auth_phone_get.__name__,
-                                 f"Не удалось получить случайный номер для звонка: \n{err}")
+            raise TokenException(f"Не удалось получить случайный номер для звонка: \n{err}")
         except TypeError as err:
-            raise TypeError(self.__class__.__qualname__,
-                            self.reverse_auth_phone_get.__name__,
-                            f"Не удалось получить случайный номер для звонка: \n{err}")
+            raise TypeError(f"Не удалось получить случайный номер для звонка: \n{err}")
 
-    def reverse_auth_phone_post(self, phone: str, webhook: str, ) -> ReverseAuthPhonePostModel:
+    def reverse_auth_phone_post(self, phone: str, webhook: str, *args, **kwargs) -> ReverseAuthPhonePostModel:
         """
         При запросе вы получаете случайный номер для звонка, а также id для получения информации о совершении звонка
         абонентом на этот номер. При подтверждении авторизации отправляется webhook на указанный url.
@@ -375,15 +356,11 @@ class BackCallsAPI(BaseAPI):
 
             )
         except requests.exceptions.RequestException as err:
-            raise TokenException(self.__class__.__qualname__,
-                                 self.reverse_auth_phone_post.__name__,
-                                 f"Не удалось получить случайный номер для звонка: \n{err}")
+            raise TokenException(f"Не удалось получить случайный номер для звонка: \n{err}")
         except TypeError as err:
-            raise TypeError(self.__class__.__qualname__,
-                            self.reverse_auth_phone_post.__name__,
-                            f"Не удалось получить случайный номер для звонка: \n{err}")
+            raise TypeError(f"Не удалось получить случайный номер для звонка: \n{err}")
 
-    def reverse_auth_phone_check(self, id_auth: int, ) -> ReverseAuthPhoneCheckModel:
+    def reverse_auth_phone_check(self, id_auth: int,*args, **kwargs ) -> ReverseAuthPhoneCheckModel:
         """
         Получение номера телефона клиента по id авторизации
         :param id_auth: Id авторизации полученный от функции get_auth_phone
@@ -401,13 +378,9 @@ class BackCallsAPI(BaseAPI):
 
             )
         except requests.exceptions.RequestException as err:
-            raise TokenException(self.__class__.__qualname__,
-                                 self.reverse_auth_phone_check.__name__,
-                                 f"Не удалось получить номер телефона клиента: \n{err}")
+            raise TokenException(f"Не удалось получить номер телефона клиента: \n{err}")
         except TypeError as err:
-            raise TypeError(self.__class__.__qualname__,
-                            self.reverse_auth_phone_check.__name__,
-                            f"Не удалось получить номер телефона клиента: \n{err}")
+            raise TypeError(f"Не удалось получить номер телефона клиента: \n{err}")
 
 
 class WhatsAppSMSAPI(BaseAPI):
@@ -415,7 +388,7 @@ class WhatsAppSMSAPI(BaseAPI):
 
 
 class SettingAPI(BaseAPI):
-    def get_status(self, id_status: int, ) -> GetStatusModel:
+    def get_status(self, id_status: int, *args, **kwargs ) -> GetStatusModel:
         """
         Получение информации об авторизации
         :param id_status: Идентификатор запроса (берется из get_code)
@@ -431,15 +404,11 @@ class SettingAPI(BaseAPI):
 
             )
         except requests.exceptions.RequestException as err:
-            raise TokenException(self.__class__.__qualname__,
-                                 self.get_status.__name__,
-                                 f"Не удалось получить информации об авторизации: \n{err}")
+            raise TokenException(f"Не удалось получить информации об авторизации: \n{err}")
         except TypeError as err:
-            raise TypeError(self.__class__.__qualname__,
-                            self.get_status.__name__,
-                            f"Не удалось получить информации об авторизации: \n{err}")
+            raise TypeError(f"Не удалось получить информации об авторизации: \n{err}")
 
-    def get_balance(self, ) -> GetBalanceModel:
+    def get_balance(self, *args, **kwargs ) -> GetBalanceModel:
         """
         Получение остатка средств на счете
         
@@ -454,15 +423,11 @@ class SettingAPI(BaseAPI):
 
             )
         except requests.exceptions.RequestException as err:
-            raise TokenException(self.__class__.__qualname__,
-                                 self.get_status.__name__,
-                                 f"Не удалось получить остатки средств на счете: \n{err}")
+            raise TokenException(f"Не удалось получить остатки средств на счете: \n{err}")
         except TypeError as err:
-            raise TypeError(self.__class__.__qualname__,
-                            self.get_status.__name__,
-                            f"Не удалось получить остатки средств на счете: \n{err}")
+            raise TypeError(f"Не удалось получить остатки средств на счете: \n{err}")
 
-    def get_billing_record(self, count_record: int, ) -> GetBillingModel:
+    def get_billing_record(self, count_record: int, *args, **kwargs ) -> GetBillingModel:
         """
         Получение N последних записей транзакций
         :param count_record: Количество последних записей (не больше 100)
@@ -478,20 +443,16 @@ class SettingAPI(BaseAPI):
 
             )
         except requests.exceptions.RequestException as err:
-            raise TokenException(self.__class__.__qualname__,
-                                 self.get_status.__name__,
-                                 f"Не удалось получить {count_record} последних записей транзакций: \n{err}")
+            raise TokenException(f"Не удалось получить {count_record} последних записей транзакций: \n{err}")
         except TypeError as err:
-            raise TypeError(self.__class__.__qualname__,
-                            self.get_status.__name__,
-                            f"Не удалось получить {count_record} последних записей транзакций: \n{err}")
+            raise TypeError(f"Не удалось получить {count_record} последних записей транзакций: \n{err}")
 
     def get_billing_csv(
         self,
         start_date: datetime.datetime | str,
         path_save_file: pathlib.Path | str,
         file_name: str = "billing.csv",
-
+        *args, **kwargs
     ):
         """
         Получение экспорта данных записей транзакций в csv формате
@@ -531,18 +492,15 @@ class SettingAPI(BaseAPI):
                 file.write(data_file)
 
         except requests.exceptions.RequestException as err:
-            raise TokenException(self.__class__.__qualname__,
-                                 self.get_billing_csv.__name__,
-                                 f"Не удалось получить экспорт данных записей транзакций в csv формате: \n{err}")
+            raise TokenException(f"Не удалось получить экспорт данных записей транзакций в csv формате: \n{err}")
         except TypeError as err:
-            raise TypeError(self.__class__.__qualname__,
-                            self.get_billing_csv.__name__,
-                            f"Не удалось получить экспорт данных записей транзакций в csv формате: \n{err}")
+            raise TypeError(f"Не удалось получить экспорт данных записей транзакций в csv формате: \n{err}")
 
     def post_billing_data(
         self,
         start_date: datetime.datetime | str,
         end_date: datetime.datetime | str,
+        *args, **kwargs
     ) -> GetBillingModel:
         """
         Получение записей транзакций
@@ -582,13 +540,9 @@ class SettingAPI(BaseAPI):
 
             )
         except requests.exceptions.RequestException as err:
-            raise TokenException(self.__class__.__qualname__,
-                                 self.post_billing_data.__name__,
-                                 f"Не удалось получить записи транзакций: \n{err}")
+            raise TokenException(f"Не удалось получить записи транзакций: \n{err}")
         except TypeError as err:
-            raise TypeError(self.__class__.__qualname__,
-                            self.post_billing_data.__name__,
-                            f"Не удалось получить записи транзакций: \n{err}")
+            raise TypeError(f"Не удалось получить записи транзакций: \n{err}")
 
 
 class TelefonIpAPI(FlashCallsAPI, BackCallsAPI, SMSCodeAPI, TGCodeAPI, WhatsAppSMSAPI, SettingAPI):

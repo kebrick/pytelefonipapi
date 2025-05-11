@@ -5,7 +5,7 @@ with open("README.md", "r", encoding="utf-8") as fh:
 
 setup(
     name='pytelefonipapi',
-    version='0.0.1',  # Hardcoded to avoid issues
+    version='0.0.2',  # Hardcoded to avoid issues
     description='Python services for convenient work with telefon-ip.ru api',
     long_description=long_description,
     long_description_content_type="text/markdown",
