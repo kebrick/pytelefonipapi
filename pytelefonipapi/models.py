@@ -1,5 +1,5 @@
 from typing import Optional, Union
-from pydantic import BaseModel
+from pydantic import BaseModel, validator, field_validator
 
 
 class GetCodeDataModel(BaseModel):
@@ -87,6 +87,13 @@ class BaseResponseModel(BaseModel):
         GetBalanceDataModel,
         BillingDataModel,
     ] = None
+
+    @field_validator('data', mode='before')
+    @classmethod
+    def validate_data(cls, data):
+        if data == {}:
+            return None
+        return data
 
 
 class GetCodeModel(BaseResponseModel):
